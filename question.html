@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Would You Like to Go on a Date with Me?</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(to right, #ff7eb3, #ff758c);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .button-container {
+            margin-top: 20px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 50px;
+            width: 100%;
+            max-width: 400px;
+            height: 200px;
+        }
+
+        .button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        .button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .yes-button {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        .no-button {
+            background-color: #ff3b3b;
+            color: white;
+            position: relative;
+        }
+
+        .message {
+            margin-top: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .visible {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <h1>Would you like to go on a date with me?</h1>
+    <div class="button-container">
+        <button class="button yes-button" onclick="yesClicked()">Yes</button>
+        <button class="button no-button" onmouseover="moveNoButton()">No</button>
+    </div>
+    <div id="message" class="message"></div>
+
+    <script>
+        function yesClicked() {
+            const messageDiv = document.getElementById("message");
+            messageDiv.textContent = "I knew you would say yes xD. Meet me on Friday at Murphies at 8pm!";
+            messageDiv.classList.add("visible");
+        }
+
+        function moveNoButton() {
+            const noButton = document.querySelector('.no-button');
+            const container = document.querySelector('.button-container');
+            const containerRect = container.getBoundingClientRect();
+            const buttonWidth = noButton.offsetWidth;
+            const buttonHeight = noButton.offsetHeight;
+
+            const newLeft = Math.random() * (containerRect.width - buttonWidth);
+            const newTop = Math.random() * (containerRect.height - buttonHeight);
+
+            noButton.style.left = `${newLeft}px`;
+            noButton.style.top = `${newTop}px`;
+        }
+    </script>
+</body>
+</html>
