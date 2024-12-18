@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Would You Like to Go on a Date with Me?</title>
+    <title>Ready for something fun?</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
         /* Gradient Animated Background */
@@ -37,10 +37,14 @@
             border-radius: 15px;
             box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
             text-align: center;
-            max-width: 600px;
+            max-width: 800px;
             width: 90%;
             animation: fadeIn 2s ease-in-out;
             margin: auto;
+        }
+
+        .hidden {
+            display: none;
         }
 
         h1 {
@@ -63,14 +67,15 @@
 
         .button-container {
             display: flex;
-            justify-content: space-evenly;
+            justify-content: space-between;
             align-items: center;
+            height: 200px;
             width: 90%;
             max-width: 400px;
             margin-top: 20px;
             position: relative;
+            gap: 20px
         }
-
 
         .button {
             padding: 15px 30px;
@@ -91,11 +96,16 @@
         .yes-button {
             background-color: #4caf50;
             color: white;
+            position: relative; 
+            z-index: 1;
+            margin-right: 20px;
         }
 
         .no-button {
             background-color: #ff3b3b;
             color: white;
+            position: relative;
+            z-index: 1;
         }
 
         .message {
@@ -129,11 +139,17 @@
             transition: width 0.3s ease;
         }
 
-        /* Moving No Button Animation */
         @keyframes bounce {
             0%, 100% { transform: translate(0, 0); }
             25% { transform: translate(-5px, 0); }
             75% { transform: translate(5px, 0); }
+        }
+
+        @media (max-width: 600px) {
+            .button-container {
+                flex-direction: column; 
+                gap: 15px; 
+            }
         }
 
         .no-button.hover {
@@ -142,13 +158,17 @@
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>Would you like to go on a date with me?</h1>
+    <div class="card" id="question-card">
+        <h1>Get ready... your most charming invite yet is about to drop</h1>
+    </div>
+    
+    <div class="card hidden" id="invite-card">
+        <h1>Dinner, just you and me, Thursday. I’ll bring the charm, you bring the smile. Deal?😉</h1>
         <div class="button-container">
             <button class="button yes-button" onclick="yesClicked()">
-                <i class="fas fa-heart"></i> Yes
+                Yes <i class="fas fa-heart"></i>
             </button>
-            <button class="button no-button" onmouseover="moveNoButton()"><span>🏃</span>No</button>
+            <button class="button no-button" onmouseover="moveNoButton()">No <span>🏃</span></button>
         </div>
         <div class="message" id="message"></div>
         <div class="progress-container" id="progress-container">
@@ -160,7 +180,18 @@
         const progressBar = document.getElementById("progress-bar");
         const progressContainer = document.getElementById("progress-container");
 
+        document.addEventListener("DOMContentLoaded", () => {
+            const questionCard = document.getElementById("question-card");
+            const inviteCard = document.getElementById("invite-card");
+
+            setTimeout(() => {
+                questionCard.classList.add("hidden");
+                inviteCard.classList.remove("hidden");
+            }, 5000);
+        });
+
         function yesClicked() {
+            resetButtons();
             progressContainer.style.display = "block";
             let progress = 0;
 
@@ -175,13 +206,9 @@
             }, 300);
         }
 
-        function noClicked() {
-            alert("Oops! Looks like you weren't supposed to click that 😜");
-        }
-
         function showMessage() {
             const messageDiv = document.getElementById("message");
-            messageDiv.textContent = "I knew you would say yes 🎉 Meet me on Friday at Murphies at 8pm!";
+            messageDiv.textContent = "I knew you couldn’t resist!😉 Thursday at 8 PM, Murphies, I’ll be ready to impress - don’t be late😏";
             messageDiv.classList.add("visible");
         }
 
@@ -189,27 +216,64 @@
             const noButton = document.querySelector('.no-button');
             const yesButton = document.querySelector('.yes-button');
             const container = document.querySelector('.button-container');
+            const messageDiv = document.getElementById('message');
+            const noButtonRect = noButton.getBoundingClientRect();
             const yesButtonRect = yesButton.getBoundingClientRect();
             const containerRect = container.getBoundingClientRect();
             const buttonWidth = noButton.offsetWidth;
             const buttonHeight = noButton.offsetHeight;
 
-            const newLeft = Math.random() * (containerRect.width - buttonWidth);
-            const newTop = Math.random() * (containerRect.height - buttonHeight);
+            // Display a random hover message
+            const hoverMessages = [
+                "Wait, you’re really thinking about saying no?😏",
+                "C’mon, don’t play hard to get😉.",
+                "You’re better than this—you know you want to say yes!😉",
+                "Are you sure? I’m pretty persistent, you know😏."
+            ];
+            const randomMessage = hoverMessages[Math.floor(Math.random() * hoverMessages.length)];
+            messageDiv.textContent = randomMessage;
+            messageDiv.classList.add('visible');
+
+            setTimeout(() => {
+                messageDiv.classList.remove('visible');
+            }, 2000); // Message disappears after 2 seconds
+
+            do {
+                newLeft = Math.random() * (containerRect.width - buttonWidth);
+                newTop = Math.random() * (containerRect.height - buttonHeight);
+
+                newLeft = Math.max(0, Math.min(newLeft, containerRect.width - buttonWidth));
+                newTop = Math.max(0, Math.min(newTop, containerRect.height - buttonHeight));
+
+            } while (
+                newLeft + buttonWidth > yesButtonRect.left - containerRect.left &&
+                newLeft < yesButtonRect.right - containerRect.left &&
+                newTop + buttonHeight > yesButtonRect.top - containerRect.top &&
+                newTop < yesButtonRect.bottom - containerRect.top
+            );
 
             noButton.style.position = "absolute";
-            noButton.style.left = `${Math.max(0, newLeft)}px`;
-            noButton.style.top = `${Math.max(0, newTop)}px`;
+            noButton.style.left = `${newLeft}px`;
+            noButton.style.top = `${newTop}px`;
 
-            noButton.addEventListener('click', function handleClick() {
-                showCustomAlert("Oops! Looks like you weren't supposed to click that 😜");
+            noButton.addEventListener('click', () => {
+            const clickMessages = [
+                "Oops, sorry—‘No’ isn’t an option😜",
+                "Denied! The ‘No’ button is off-limits for you😉",
+                "That’s cute... but try again and click ‘Yes’ this time 😏",
+                "The universe clearly wants you to click ‘Yes’—don’t fight it😉",
+                "Running away already? Don’t worry, I’ll win you over😉"
+            ];
+            const randomClickMessage = clickMessages[Math.floor(Math.random() * clickMessages.length)];
+            messageDiv.textContent = randomClickMessage;
+            messageDiv.classList.add('visible');
+            noButton.removeEventListener('click', handleClick);
+            resetButtons();
 
-                noButton.removeEventListener('click', handleClick);
-
-                setTimeout(() => {
-                    resetButtonPosition();
-                }, 2000); 
-            });
+            setTimeout(() => {
+                messageDiv.classList.remove('visible');
+            }, 2000); // Message disappears after 2 seconds
+        });
             
             noButton.classList.add('hover');
             setTimeout(() => {
@@ -227,11 +291,27 @@
             }, 2000);
         }
 
-        function resetButtonPosition() {
+        let initialYesButtonTransform = '';
+        let initialNoButtonTransform = '';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const yesButton = document.querySelector('.yes-button');
             const noButton = document.querySelector('.no-button');
-            noButton.style.position = "static"; 
+            initialYesButtonTransform = yesButton.style.transform || 'translate(0, 0)';
+            initialNoButtonTransform = noButton.style.transform || 'translate(0, 0)';
+        });
+
+        function resetButtons() {
+            const yesButton = document.querySelector('.yes-button');
+            const noButton = document.querySelector('.no-button');
+
+            noButton.style.position = "static";
             noButton.style.left = null;
             noButton.style.top = null;
+
+            yesButton.style.position = "static";
+            yesButton.style.left = null;
+            yesButton.style.top = null;
         }
 
     </script>
